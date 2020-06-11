@@ -21,7 +21,7 @@ const { default: PQueue } = require('p-queue');
 
     console.log(`\nsleep...\n`);
     await new Promise((resolve) => setTimeout(resolve, 60000));
-    
+
 
     const queue = new PQueue({
         concurrency: 1,
@@ -60,12 +60,12 @@ async function getUserPosts(agent, userName) {
                 const previousSearchParams = response.request.options.searchParams;
                 const previousPerPage = +previousSearchParams.get('per_page');
                 const previousPage = +previousSearchParams.get('page');
-                
+
                 if (!currentItems || currentItems.length < previousPerPage) {
                     return false;
                 }
 
-                console.log(`page ${previousPage + 1}`); 
+                console.log(`page ${previousPage + 1}`);
                 return {
                     searchParams: { per_page: previousPerPage, page: previousPage + 1 }
                 };
@@ -79,7 +79,7 @@ async function getUserPosts(agent, userName) {
             posts.push(post);
         }
     }
-    
+
     return posts;
 }
 
