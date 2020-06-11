@@ -34,11 +34,11 @@ const { default: PQueue } = require('p-queue');
             console.error(`post ${post_id} fail`, err);
             voteFn(post_id);
         });
-	for (const post of posts) {
+    for (const post of posts) {
         if (post.user_vote === null) {
             voteFn(post.id);
         }
-	}
+    }
 
 })();
 
@@ -74,7 +74,7 @@ async function getUserPosts(agent, userName) {
     });
 
     const posts = [];
-	for await (const post of iterator) {
+    for await (const post of iterator) {
         if (post) {
             posts.push(post);
         }
