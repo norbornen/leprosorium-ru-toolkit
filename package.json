@@ -1,12 +1,16 @@
 {
   "name": "leprosorium-ru-vote",
   "description": "Минусатор постов пользователя leprosorium.ru",
-  "version": "0.0.1",
-  "main": "index.js",
+  "version": "0.0.2",
+  "main": "src/index.js",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "got": "^11.3.0",
-    "p-queue": "^6.4.0"
+    "got": "^11.8.2",
+    "p-queue": "^7.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^15.0.0"
   }
 }
