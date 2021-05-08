@@ -6,11 +6,11 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "dotenv": "^8.2.0",
+    "dotenv": "^9.0.0",
     "got": "^11.8.2",
     "p-queue": "^7.1.0"
   },
   "devDependencies": {
-    "@types/node": "^15.0.0"
+    "@types/node": "^15.0.2"
   }
 }
