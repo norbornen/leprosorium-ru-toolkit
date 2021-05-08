@@ -17,18 +17,29 @@ const Agent = got.extend({
 
 /**
  * @param { string } userName
+ * @returns { Promise<{ [key: string]: any; user_info: Record<string, any>; }> }
+ */
+async function getUserProfile(userName) {
+  const { body } = await Agent.get(`users/${userName}/info/`, { responseType: 'json' });
+  return body;
+}
+
+/**
+ * @param { string } userName
+ * @param { number } [limit]
  * @returns { Promise<Array<Record<string, any>>> }
  */
-async function getUserPosts(userName) {
+async function getUserPosts(userName, limit) {
   return getUserRecords(userName, 'posts');
 }
 
 /**
  * @param { string } userName
+ * @param { number } [limit]
  * @returns { Promise<Array<Record<string, any>>> }
  */
-async function getUserLastComments(userName) {
-  return getUserRecords(userName, 'comments', 2500);
+async function getUserComments(userName, limit) {
+  return getUserRecords(userName, 'comments', limit);
 }
 
 /**
@@ -104,9 +115,10 @@ async function voteRecord(endpoint, item_id, vote = 0) {
 }
 
 export default {
-  _agent: Agent,
+  agent: Agent,
+  getUserProfile,
   getUserPosts,
-  getUserLastComments,
+  getUserComments,
   votePost,
   voteComment,
 };

@@ -2,16 +2,23 @@
 // @ts-check
 import dotenv from 'dotenv';
 import PQueue from 'p-queue';
+import { loopAsk } from './ask.js';
 import leprosorium from './leprosorium.js';
 
 dotenv.config();
 
 (async () => {
+  const username = await loopAsk('Username: ');
+
+  const profile = await leprosorium.getUserProfile(username);
+
+  // process.exit(1);
+
   // data loading
   console.log('loading posts...');
-  const posts = await leprosorium.getUserPosts(process.env['USERNAME']);
+  const posts = await leprosorium.getUserPosts(username);
   console.log('loading comments...');
-  const comments = []; //await leprosorium.getUserLastComments(process.env['USERNAME']);
+  const comments = await leprosorium.getUserLastComments(username);
 
   // data handling
   const queue = new PQueue({
@@ -23,7 +30,7 @@ dotenv.config();
     .then(() => console.log(`item ${fn.item_id} voted`))
     .catch((err) => {
       console.error(`item ${fn.item_id} vote fail: ${err}, ${err.response?.statusCode || '-'}`);
-      
+
       const errors = err.response?.body?.errors || [];
       if (errors.some((x) => x?.description?.code === 'voting_disabled')) {
         return;
