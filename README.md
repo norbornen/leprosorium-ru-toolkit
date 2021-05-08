@@ -2,6 +2,12 @@
 Минусатор постов пользователя leprosorium.ru
 
 ```bash
+$ cat .env 
+X-Futuware-SID=******
+X-Futuware-UID=******
+```
+
+```bash
 $ node src/index.js 
 Username: username1
 
