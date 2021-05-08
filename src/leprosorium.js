@@ -17,11 +17,15 @@ const Agent = got.extend({
 
 /**
  * @param { string } userName
- * @returns { Promise<{ [key: string]: any; user_info: Record<string, any>; }> }
+ * @returns { Promise<{ [key: string]: any; user_info: Record<string, any>; } | null> }
  */
 async function getUserProfile(userName) {
-  const { body } = await Agent.get(`users/${userName}/info/`, { responseType: 'json' });
-  return body;
+  try {
+    const { body } = await Agent.get(`users/${userName}/info/`, { responseType: 'json' });
+    return body;
+  } catch (error) {
+    console.error(error.message);
+  }
 }
 
 /**
@@ -108,10 +112,18 @@ async function getUserRecords(userName, endpoint, limit) {
  * @param { string } endpoint
  * @param { number } item_id
  * @param { number } [vote=0]
- * @returns { Promise<any> }
+ * @returns { Promise<void> }
  */
 async function voteRecord(endpoint, item_id, vote = 0) {
-  return Agent.post(`${endpoint}/${item_id}/vote/`, { json: { vote } });
+  try {
+    await Agent.post(`${endpoint}/${item_id}/vote/`, { json: { vote } });
+  } catch (err) {
+    const errors = err.response?.body?.errors || [];
+    if (errors.some((x) => x?.description?.code === 'voting_disabled')) {
+      return;
+    }
+    throw err;
+  }
 }
 
 export default {

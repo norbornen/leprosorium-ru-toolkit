@@ -52,6 +52,7 @@
     "no-multiple-empty-lines": "off",
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "no-use-before-define": "off",
-    "padded-blocks": "off"
+    "padded-blocks": "off",
+    "prefer-const": "warn"
   }
 }

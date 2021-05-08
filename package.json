@@ -1,16 +1,20 @@
 {
   "name": "leprosorium-ru-vote",
   "description": "Минусатор постов пользователя leprosorium.ru",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "src/index.js",
   "license": "MIT",
   "type": "module",
   "dependencies": {
     "dotenv": "^9.0.0",
     "got": "^11.8.2",
+    "leveldown": "^6.0.0",
+    "levelup": "^5.0.0",
     "p-queue": "^7.1.0"
   },
   "devDependencies": {
+    "@types/leveldown": "^4.0.2",
+    "@types/levelup": "^4.3.1",
     "@types/node": "^15.0.2",
     "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
