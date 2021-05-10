@@ -25,15 +25,15 @@ dotenv.config();
   let comments;
 
   const needPostsVoting = await ask(`\nУ пользователя ${profile.user_info.login} ${profile.posts_count} постов, минусовать посты? [Y/n] `);
-  if (needPostsVoting && (/^Y/i).test(needPostsVoting)) {
+  if (/^Y/i.test(needPostsVoting ?? '')) {
     const limit = await ask('Cколько постов минуснуть?: ');
-    console.log('loading posts...');
+    console.log(`загрузка постов пользователя ${profile.user_info.login}...`);
     posts = await leprosorium.getUserPosts(username, limit && /^\d+$/.test(limit) ? +limit : null);
   }
   const needCommentsVoting = await ask(`\nУ пользователя ${profile.user_info.login} ${profile.comments_count} комментариев, минусовать комментарии? [Y/n] `);
-  if (needCommentsVoting && (/^Y/i).test(needCommentsVoting)) {
+  if (/^Y/i.test(needCommentsVoting ?? '')) {
     const limit = await ask('Cколько комментариев минуснуть?: ');
-    console.log('loading comments...');
+    console.log(`загрузка комментариев пользователя ${profile.user_info.login}...`);
     comments = await leprosorium.getUserComments(username, limit && /^\d+$/.test(limit) ? +limit : null);
   }
 
@@ -48,8 +48,8 @@ dotenv.config();
     .catch((err) => {
       console.error(`item ${fn.voting_key} vote fail: ${err}, ${err.response?.statusCode || '-'}`);
 
-      const errors = err.response?.body?.errors || [];
-      if (errors.length > 0) {
+      const errors = err.response?.body?.errors;
+      if (errors?.length > 0) {
         console.error(JSON.stringify(errors));
       }
 

@@ -34,7 +34,7 @@ async function getUserProfile(userName) {
  * @returns { Promise<Array<Record<string, any>>> }
  */
 async function getUserPosts(userName, limit) {
-  return getUserRecords(userName, 'posts');
+  return getUserRecords(userName, 'posts', limit);
 }
 
 /**
@@ -83,7 +83,7 @@ async function getUserRecords(userName, endpoint, limit) {
         const previousPerPage = +previousSearchParams.get('per_page');
         const previousPage = +previousSearchParams.get('page');
 
-        if (!currentItems || currentItems.length < previousPerPage) {
+        if (currentItems?.length < previousPerPage) {
           return false;
         }
 
@@ -118,8 +118,7 @@ async function voteRecord(endpoint, item_id, vote = 0) {
   try {
     await Agent.post(`${endpoint}/${item_id}/vote/`, { json: { vote } });
   } catch (err) {
-    const errors = err.response?.body?.errors || [];
-    if (errors.some((x) => x?.description?.code === 'voting_disabled')) {
+    if (err.response?.body?.errors?.some((x) => x?.description?.code === 'voting_disabled')) {
       return;
     }
     throw err;
