@@ -3,8 +3,9 @@
 import got from 'got';
 import ora from 'ora';
 import dotenv from 'dotenv';
-import LocalDB from '../localdb.js';
-import { ask } from '../ask.js';
+import LocalDB from '../store/index.js';
+import { ask } from '../utils/ask.js';
+import { isNil } from '../utils/nil.js';
 
 dotenv.config();
 
@@ -42,13 +43,13 @@ const AGENT = got.extend({
           } catch (err) {
             const [username, password] = await ask('Ваш логин на leprosorium.ru: ')
               .then((res) => {
-                if (res === null || res === undefined) {
+                if (isNil(res)) {
                   throw new Error('USERNAME_IS_EMPTY');
                 }
                 return Promise.all([res, ask('Ваш пароль на leprosorium.ru: ')]);
               })
               .then((res) => {
-                if (res.some((x) => x === null || x === undefined)) {
+                if (res.some((x) => isNil(x))) {
                   throw new Error('PASSWORD_IS_EMPTY');
                 }
                 return res;
