@@ -3,7 +3,7 @@
 import dotenv from 'dotenv';
 import PQueue from 'p-queue';
 import { ask, loopAsk } from './ask.js';
-import leprosorium from './leprosorium.js';
+import * as leprosorium from './transport/index.js';
 import LocalDB from './localdb.js';
 
 dotenv.config();

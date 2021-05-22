@@ -1,16 +1,50 @@
+/* eslint-disable no-param-reassign */
 // @ts-check
 import got from 'got';
 import dotenv from 'dotenv';
 import ora from 'ora';
+import { ask } from '../ask.js';
 
 dotenv.config();
 
-const Agent = got.extend({
-  prefixUrl: 'https://leprosorium.ru/api/',
+const ENDPOINT = 'https://leprosorium.ru/api/';
+
+const AGENT = got.extend({
+  prefixUrl: ENDPOINT,
   headers: {
     'X-Futuware-SID': process.env['X-Futuware-SID'],
     'X-Futuware-UID': process.env['X-Futuware-UID'],
-    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
+    'user-agent': 'Mozilla/5.0'
+  },
+  hooks: {
+    beforeRequest: [
+      async (options) => {
+        if (!options.headers['X-Futuware-SID'] || !options.headers['X-Futuware-UID']) {
+          const [username, password] = await ask('Ваш логин на leprosorium.ru: ')
+            .then((res) => {
+              if (res === null || res === undefined) {
+                throw new Error('USERNAME_IS_EMPTY');
+              }
+              return Promise.all([res, ask('Ваш пароль на leprosorium.ru: ')]);
+            })
+            .then((res) => {
+              if (res.some((x) => x === null || x === undefined)) {
+                throw new Error('PASSWORD_IS_EMPTY');
+              }
+              return res;
+            });
+          const { body } = await got.post(
+            `${ENDPOINT}auth/login/`,
+            {
+              json: { username, password },
+              responseType: 'json'
+            }
+          );
+          options.headers['X-Futuware-SID'] = body.sid;
+          options.headers['X-Futuware-UID'] = body.uid;
+        }
+      }
+    ]
   },
   responseType: 'json',
   timeout: 15 * 1000
@@ -22,7 +56,7 @@ const Agent = got.extend({
  */
 async function getUserProfile(userName) {
   try {
-    const { body } = await Agent.get(`users/${userName}/info/`, { responseType: 'json' });
+    const { body } = await AGENT.get(`users/${userName}/info/`, { responseType: 'json' });
     return body;
   } catch (error) {
     console.error(error.message);
@@ -73,7 +107,7 @@ async function voteComment(item_id, vote) {
  */
 async function getUserRecords(userName, endpoint, limit) {
   const spinner = ora('page1 ').start();
-  const iterator = Agent.paginate(`users/${userName}/${endpoint}/`, {
+  const iterator = AGENT.paginate(`users/${userName}/${endpoint}/`, {
     searchParams: {
       page: 1,
       per_page: 25
@@ -108,7 +142,7 @@ async function getUserRecords(userName, endpoint, limit) {
     }
   }
 
-  spinner.succeed();
+  spinner.succeed('done');
   return records;
 }
 
@@ -120,7 +154,7 @@ async function getUserRecords(userName, endpoint, limit) {
  */
 async function voteRecord(endpoint, item_id, vote = 0) {
   try {
-    await Agent.post(`${endpoint}/${item_id}/vote/`, { json: { vote } });
+    await AGENT.post(`${endpoint}/${item_id}/vote/`, { json: { vote } });
   } catch (err) {
     if (err.response?.body?.errors?.some((x) => x?.description?.code === 'voting_disabled')) {
       return;
@@ -129,8 +163,7 @@ async function voteRecord(endpoint, item_id, vote = 0) {
   }
 }
 
-export default {
-  agent: Agent,
+export {
   getUserProfile,
   getUserPosts,
   getUserComments,
