@@ -52,6 +52,7 @@ const AGENT = got.extend({
                 if (res.some((x) => isNil(x))) {
                   throw new Error('PASSWORD_IS_EMPTY');
                 }
+                console.log('');
                 return res;
               });
 
