@@ -79,7 +79,7 @@ const AGENT = got.extend({
 });
 
 /**
- * @returns { Promise<{ [key: string]: any; id: number; } | null> }
+ * @returns { Promise<{ [key: string]: any; id: number; login: string; } | null> }
  */
 async function checkAuth() {
   try {
