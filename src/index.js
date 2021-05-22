@@ -18,7 +18,7 @@ import LocalDB from './store/index.js';
   }
 
   // init local storage by owner.id and username.id
-  const localdb = new LocalDB(`${owner.id}::${profile.user_info.id}`);
+  const localdb = LocalDB.create(owner.id, profile.user_info.id);
 
   // data loading
   /** @type {Array<Record<string, any>>} */

@@ -59,4 +59,15 @@ export default class leveldbCollection {
     return db.del(collectionKey).catch(() => {});
   }
 
+  /**
+   * @static
+   * @param {Array<string | number>} args
+   * @returns {leveldbCollection}
+   * @memberof leveldbCollection
+   */
+  static create(...args) {
+    const prefix = args.join('::');
+    return new this(prefix);
+  }
+
 }

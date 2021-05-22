@@ -31,7 +31,7 @@ const AGENT = got.extend({
           []
         );
         if (!(existsHeaders.includes('x-futuware-sid') && existsHeaders.includes('x-futuware-uid'))) {
-          const localdb = new LocalDB('x-futuware');
+          const localdb = LocalDB.create('x-futuware');
           /** @type {string} */
           let sid;
           /** @type {string} */
