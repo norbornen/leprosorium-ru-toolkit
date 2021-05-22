@@ -1,14 +1,12 @@
-# leprosorium-ru-vote
+# leprosorium-ru-toolkit
 Минусатор постов пользователя leprosorium.ru
 
 ```bash
-$ cat .env 
-X-Futuware-SID=******
-X-Futuware-UID=******
-```
-
-```bash
 $ node src/index.js 
+
+Ваш логин на leprosorium.ru: username
+Ваш пароль на leprosorium.ru: password
+
 Username: username1
 
 У пользователя username1 66 постов, минусовать посты? [Y/n] 
