@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // @ts-check
 import PQueue from 'p-queue';
-import { ask, loopAsk } from './utils/ask.js';
 import * as leprosorium from './transport/index.js';
 import LocalDB from './store/index.js';
+import { ask, loopAsk } from './utils/ask.js';
 
 
 (async () => {

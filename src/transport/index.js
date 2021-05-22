@@ -150,7 +150,7 @@ async function getUserRecords(userName, endpoint, limit) {
   const iterator = AGENT.paginate(`users/${userName}/${endpoint}/`, {
     searchParams: {
       page: 1,
-      per_page: 25
+      per_page: 35
     },
     pagination: {
       transform: (response) => (response?.body?.[endpoint] || []),
