@@ -1,7 +1,7 @@
 # leprosorium-ru-toolkit
 Минусатор постов пользователя leprosorium.ru
 
-```bash
+```
 $ node src/index.js 
 
 Ваш логин на leprosorium.ru: username
@@ -15,3 +15,10 @@ Username: username1
 Cколько комментариев минуснуть?: 2000
 loading comments...
 ```
+
+```
+$ node src/stat.js
+
+Username: jovan
+```
+![q](https://user-images.githubusercontent.com/314510/119238770-4f2a9a00-bb4d-11eb-8064-e387c3bc073c.jpg)
