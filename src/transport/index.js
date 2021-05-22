@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
 // @ts-check
 import got from 'got';
-import dotenv from 'dotenv';
 import ora from 'ora';
+import dotenv from 'dotenv';
+import LocalDB from '../localdb.js';
 import { ask } from '../ask.js';
 
 dotenv.config();
@@ -19,29 +20,54 @@ const AGENT = got.extend({
   hooks: {
     beforeRequest: [
       async (options) => {
-        if (!options.headers['X-Futuware-SID'] || !options.headers['X-Futuware-UID']) {
-          const [username, password] = await ask('Ваш логин на leprosorium.ru: ')
-            .then((res) => {
-              if (res === null || res === undefined) {
-                throw new Error('USERNAME_IS_EMPTY');
-              }
-              return Promise.all([res, ask('Ваш пароль на leprosorium.ru: ')]);
-            })
-            .then((res) => {
-              if (res.some((x) => x === null || x === undefined)) {
-                throw new Error('PASSWORD_IS_EMPTY');
-              }
-              return res;
-            });
-          const { body } = await got.post(
-            `${ENDPOINT}auth/login/`,
-            {
-              json: { username, password },
-              responseType: 'json'
+        const existsHeaders = Object.keys(options.headers || {}).reduce(
+          (acc, key) => {
+            if (options.headers[key]) {
+              acc.push(key.toLowerCase());
             }
-          );
-          options.headers['X-Futuware-SID'] = body.sid;
-          options.headers['X-Futuware-UID'] = body.uid;
+            return acc;
+          },
+          []
+        );
+        if (!(existsHeaders.includes('x-futuware-sid') && existsHeaders.includes('x-futuware-uid'))) {
+          const localdb = new LocalDB('x-futuware');
+          /** @type {string} */
+          let sid;
+          /** @type {string} */
+          let uid;
+
+          try {
+            sid = (await localdb.get('sid'))?.toString();
+            uid = (await localdb.get('uid'))?.toString();
+          } catch (err) {
+            const [username, password] = await ask('Ваш логин на leprosorium.ru: ')
+              .then((res) => {
+                if (res === null || res === undefined) {
+                  throw new Error('USERNAME_IS_EMPTY');
+                }
+                return Promise.all([res, ask('Ваш пароль на leprosorium.ru: ')]);
+              })
+              .then((res) => {
+                if (res.some((x) => x === null || x === undefined)) {
+                  throw new Error('PASSWORD_IS_EMPTY');
+                }
+                return res;
+              });
+
+            const { body } = await got.post(
+              `${ENDPOINT}auth/login/`,
+              {
+                json: { username, password },
+                responseType: 'json'
+              }
+            );
+
+            localdb.put('sid', sid = body.sid);
+            localdb.put('uid', uid = body.uid);
+          }
+
+          options.headers['X-Futuware-SID'] = sid;
+          options.headers['X-Futuware-UID'] = uid;
         }
       }
     ]
@@ -49,6 +75,18 @@ const AGENT = got.extend({
   responseType: 'json',
   timeout: 15 * 1000
 });
+
+/**
+ * @returns { Promise<{ [key: string]: any; id: number; } | null> }
+ */
+async function checkAuth() {
+  try {
+    const { body } = await AGENT.get('my/mini/', { responseType: 'json' });
+    return body;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
 
 /**
  * @param { string } userName
@@ -106,7 +144,7 @@ async function voteComment(item_id, vote) {
  * @returns { Promise<Array<Record<string, any>>> }
  */
 async function getUserRecords(userName, endpoint, limit) {
-  const spinner = ora('page1 ').start();
+  const spinner = ora('page 1').start();
   const iterator = AGENT.paginate(`users/${userName}/${endpoint}/`, {
     searchParams: {
       page: 1,
@@ -170,3 +208,4 @@ export {
   votePost,
   voteComment,
 };
+export const auth = checkAuth;

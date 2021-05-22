@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 // @ts-check
-import dotenv from 'dotenv';
 import PQueue from 'p-queue';
 import { ask, loopAsk } from './ask.js';
 import * as leprosorium from './transport/index.js';
 import LocalDB from './localdb.js';
 
-dotenv.config();
 
 (async () => {
+  // check auth
+  const owner = await leprosorium.auth();
+
   // profile loading
   const username = await loopAsk('Username: ');
   const profile = await leprosorium.getUserProfile(username);
@@ -16,7 +17,8 @@ dotenv.config();
     throw new Error('USER_NOT_FOUND');
   }
 
-  const localdb = new LocalDB(profile.user_info.id);
+  // init local storage by owner.id and username.id
+  const localdb = new LocalDB(`${owner.id}::${profile.user_info.id}`);
 
   // data loading
   /** @type {Array<Record<string, any>>} */
@@ -24,13 +26,13 @@ dotenv.config();
   /** @type {Array<Record<string, any>>} */
   let comments;
 
-  const needPostsVoting = await ask(`\nУ пользователя ${profile.user_info.login} ${profile.posts_count} постов, минусовать посты? [Y/n] `);
+  const needPostsVoting = await ask(`\nУ пользователя "${profile.user_info.login}" ${profile.posts_count} постов, минусовать посты? [Y/n] `);
   if (/^Y/i.test(needPostsVoting ?? '')) {
     const limit = await ask('Cколько постов минуснуть?: ');
     console.log(`загрузка постов пользователя ${profile.user_info.login}...`);
     posts = await leprosorium.getUserPosts(username, limit && /^\d+$/.test(limit) ? +limit : null);
   }
-  const needCommentsVoting = await ask(`\nУ пользователя ${profile.user_info.login} ${profile.comments_count} комментариев, минусовать комментарии? [Y/n] `);
+  const needCommentsVoting = await ask(`\nУ пользователя "${profile.user_info.login}" ${profile.comments_count} комментариев, минусовать комментарии? [Y/n] `);
   if (/^Y/i.test(needCommentsVoting ?? '')) {
     const limit = await ask('Cколько комментариев минуснуть?: ');
     console.log(`загрузка комментариев пользователя ${profile.user_info.login}...`);

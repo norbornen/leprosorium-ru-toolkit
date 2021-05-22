@@ -50,4 +50,13 @@ export default class leveldbCollection {
     return this.get(key).then(() => true).catch(() => false);
   }
 
+  /**
+   * @param {string | Buffer} key
+   * @returns {Promise<void>}
+   */
+  async del(key) {
+    const collectionKey = Buffer.concat([this.prefix, Buffer.from(key)]);
+    return db.del(collectionKey).catch(() => {});
+  }
+
 }
