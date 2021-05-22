@@ -1,6 +1,7 @@
 // @ts-check
 import got from 'got';
 import dotenv from 'dotenv';
+import ora from 'ora';
 
 dotenv.config();
 
@@ -71,6 +72,7 @@ async function voteComment(item_id, vote) {
  * @returns { Promise<Array<Record<string, any>>> }
  */
 async function getUserRecords(userName, endpoint, limit) {
+  const spinner = ora('page1 ').start();
   const iterator = Agent.paginate(`users/${userName}/${endpoint}/`, {
     searchParams: {
       page: 1,
@@ -87,7 +89,8 @@ async function getUserRecords(userName, endpoint, limit) {
           return false;
         }
 
-        console.log(`page ${previousPage + 1}`);
+        spinner.text = `page ${previousPage + 1}`;
+
         return {
           searchParams: { per_page: previousPerPage, page: previousPage + 1 }
         };
@@ -105,6 +108,7 @@ async function getUserRecords(userName, endpoint, limit) {
     }
   }
 
+  spinner.succeed();
   return records;
 }
 

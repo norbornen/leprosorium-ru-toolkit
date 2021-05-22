@@ -5,20 +5,25 @@
   "main": "src/index.js",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "lint": "eslint src/"
+  },
   "dependencies": {
-    "dotenv": "^9.0.1",
+    "dotenv": "^10.0.0",
     "got": "^11.8.2",
     "leveldown": "^6.0.0",
     "levelup": "^5.0.0",
+    "ora": "^5.4.0",
     "p-queue": "^7.1.0"
   },
   "devDependencies": {
     "@types/leveldown": "^4.0.2",
     "@types/levelup": "^4.3.1",
-    "@types/node": "^15.0.2",
-    "eslint": "^7.26.0",
+    "@types/node": "^15.6.0",
+    "eslint": "^7.27.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-promise": "^5.1.0"
   },
   "engines": {
     "node": ">=16.0.0"

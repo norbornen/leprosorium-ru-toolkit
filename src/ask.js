@@ -6,15 +6,15 @@ import readline from 'readline';
  * @returns {Promise<string | null>}
  */
 export async function ask(question) {
-  return (new Promise((resolve, _reject) => {
+  return (new Promise((resolve, reject) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     rl.question(question, (x) => {
+      rl.close();
       if (!/\S/.test(x ?? '')) {
         resolve(null);
       } else {
         resolve(x.trim());
       }
-      rl.close();
     });
   }));
 }
