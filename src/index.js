@@ -9,6 +9,7 @@ import { ask, loopAsk } from './utils/ask.js';
 (async () => {
   // check auth
   const owner = await leprosorium.auth();
+  console.log(`\nПриложение работает под аккаунтом ${owner.login}\n`);
 
   // profile loading
   const username = await loopAsk('Username: ');
