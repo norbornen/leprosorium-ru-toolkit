@@ -75,11 +75,13 @@ const AGENT = got.extend({
     ]
   },
   responseType: 'json',
-  timeout: 15 * 1000
+  timeout: {
+    request: 15 * 1000,
+  }
 });
 
 /**
- * @returns { Promise<{ [key: string]: any; id: number; login: string; } | null> }
+ * @returns { Promise<{ [key: string]: any; id: number; login: string; } | undefined> }
  */
 async function checkAuth() {
   try {
@@ -92,7 +94,7 @@ async function checkAuth() {
 
 /**
  * @param { string } userName
- * @returns { Promise<{ [key: string]: any; user_info: Record<string, any>; } | null> }
+ * @returns { Promise<{ [key: string]: any; user_info: Record<string, any>; } | undefined> }
  */
 async function getUserProfile(userName) {
   try {
@@ -154,7 +156,7 @@ async function getUserRecords(userName, endpoint, limit) {
     },
     pagination: {
       transform: (response) => (response?.body?.[endpoint] || []),
-      paginate: (response, allItems, currentItems) => {
+      paginate: ({ response, allItems, currentItems }) => {
         const previousSearchParams = response.request.options.searchParams;
         const previousPerPage = +previousSearchParams.get('per_page');
         const previousPage = +previousSearchParams.get('page');
